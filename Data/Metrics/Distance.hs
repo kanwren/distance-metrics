@@ -123,8 +123,14 @@ sift1 = undefined
 jaro :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
 jaro s1 s2 = 1 - SM.jaro s1 s2
 
+-- Simplification of JWD by algebra
+--
+--   JWD l p a b
+-- = 1 - JWS l p a b
+-- = (1 - JS a b) * (1 - l * p)
+-- = (JD a b) * (1 - l * p)
 jaroWinkler :: Eq a => Int -> Ratio Int -> V.Vector a -> V.Vector a -> Ratio Int
-jaroWinkler prefixLen p s1 s2 = 1 - SM.jaroWinkler prefixLen p s1 s2
+jaroWinkler prefixLen p s1 s2 = (jaro s1 s2) * (1 - fromIntegral prefixLen * p)
 
 jaroWinklerStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
 jaroWinklerStd s1 s2 = 1 - SM.jaroWinklerStd s1 s2
