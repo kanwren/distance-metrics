@@ -8,7 +8,7 @@ module Data.Metrics.Distance (
     jaroWinklerStd,
     levenshtein,
     optimalStringAlignment,
-    sift1,
+    sift1
     ) where
 
 import Control.Monad
