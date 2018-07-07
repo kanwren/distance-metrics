@@ -1,4 +1,4 @@
-module Data.Distance.Metrics (
+module Data.Metrics.Distance (
     EditCosts,
     defaultEditCosts,
     hamming,
@@ -21,6 +21,7 @@ import qualified Data.Array as A
 import qualified Data.Array.ST as SA
 import qualified Data.Map as M
 import qualified Data.Vector as V
+import qualified Data.Metrics.Similarity as SM
 
 data EditCosts = EditCosts { insertCost     :: Int
                            , deleteCost     :: Int
@@ -131,24 +132,25 @@ transpositions :: V.Vector Int -> Int
 transpositions = V.length . V.filter id . (V.zipWith (>) <*> V.tail)
 
 jaro :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
-jaro s1 s2 =
-    let l1 = V.length s1; l2 = V.length s2
-        [m, t] = map ($ matches s1 s2) [length, transpositions]
-        sim = (m % l1 + m % l2 + (m - t) % m) / 3
-    in if m == 0 then 0 % 1 else sim
+jaro s1 s2 = SM.jaro s1 s2
 
--- p should not exceed 0.25
--- standard value for p is 0.1
 jaroWinkler :: Eq a => V.Vector a -> V.Vector a -> Int -> Ratio Int -> Ratio Int
-jaroWinkler s1 s2 prefixLen p =
-    let fixedLen = max 0 $ min 4 prefixLen
-        prefix1 = V.take fixedLen s1; prefix2 = V.take fixedLen s2
-        sharedLen = V.length $ V.filter id $ V.zipWith (==) prefix1 prefix2
-        sim = jaro s1 s2
-    in sim + fromIntegral sharedLen * p * (1 - sim)
+jaroWinkler s1 s2 prefixLen p = 1 - SM.jaroWinkler s1 s2 prefixLen p
 
 jaroWinklerStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
-jaroWinklerStd s1 s2 = jaroWinkler s1 s2 4 (1 % 10)
+jaroWinklerStd s1 s2 = 1 - SM.jaroWinklerStd s1 s2
+
+longestCommonSubstring :: Eq a => V.Vector a -> V.Vector a -> Int
+longestCommonSubstring = undefined
+
+qgram :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
+qgram = undefined
+
+cosine :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
+cosine s1 s2 = 1 - SM.cosine s1 s2
+
+jaccard :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
+jaccard s1 s2 = 1 - SM.jaccard s1 s2
 
 onStr :: (V.Vector a -> V.Vector a -> b) -> [a] -> [a] -> b
 onStr distanceCalc = distanceCalc `on` V.fromList
