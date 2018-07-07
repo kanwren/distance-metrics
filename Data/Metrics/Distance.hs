@@ -1,20 +1,20 @@
 module Data.Metrics.Distance (
     EditCosts,
+    cosineSim,
     damerauLevenshtein,
     defaultEditCosts,
     hamming,
+    jaccardSim,
     jaro,
+    jaroSim,
     jaroWinkler,
+    jaroWinklerSim,
+    jaroWinklerSimStd,
     jaroWinklerStd,
     levenshtein,
     optimalStringAlignment,
     sift1,
     sift1Std,
-    cosineSim,
-    jaccardSim,
-    jaroSim,
-    jaroWinklerSim,
-    jaroWinklerSimStd
     ) where
 
 import Control.Monad
@@ -22,18 +22,18 @@ import Control.Monad.ST
 import Data.List
 import Data.Ratio
 import Data.STRef
-import qualified Data.Set as S
 import qualified Data.Array as A
 import qualified Data.Array.ST as SA
 import qualified Data.Map as M
-import qualified Data.Vector as V
 import qualified Data.Metrics.NGram as N
+import qualified Data.Set as S
+import qualified Data.Vector as V
 
 data EditCosts = EditCosts { insertCost     :: Int
                            , deleteCost     :: Int
                            , substituteCost :: Int
                            , transposeCost  :: Int
-                           }
+                           } deriving Show
 
 defaultEditCosts :: EditCosts
 defaultEditCosts = EditCosts 1 1 1 1
@@ -148,7 +148,7 @@ sift1Std :: Eq a => V.Vector a -> V.Vector a -> Int
 sift1Std = sift1 10
 
 sift2 :: (Eq a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
-sift2 maxOffset s1 s2 = undefined
+sift2 = undefined
 
 sift2Std :: (Eq a, Floating b) => V.Vector a -> V.Vector a -> b
 sift2Std = sift2 5

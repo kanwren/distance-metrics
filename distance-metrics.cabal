@@ -13,7 +13,7 @@ name:                distance-metrics
 version:             0.1.0.0
 
 -- A short (one-line) description of the package.
--- synopsis:
+synopsis: An implementation of various generic distance metrics in native Haskell
 
 -- A longer description of the package.
 -- description:
@@ -34,7 +34,7 @@ maintainer:          justindprindle@gmail.com
 -- A copyright notice.
 -- copyright:
 
--- category:
+category:            Algorithms
 
 build-type:          Simple
 
