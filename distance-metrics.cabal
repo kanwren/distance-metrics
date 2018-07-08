@@ -49,8 +49,7 @@ cabal-version:       >=1.10
 library
   -- Modules exported by the library.
   exposed-modules:   Data.Metrics.Distance,
-                     Data.Metrics.NGram,
-                     Data.Metrics.Keyboards.Qwerty
+                     Data.Metrics.NGram
 
   -- Modules included in this library but not exported.
   -- other-modules:

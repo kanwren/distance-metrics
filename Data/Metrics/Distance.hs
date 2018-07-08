@@ -29,23 +29,24 @@ import qualified Data.Metrics.NGram as N
 import qualified Data.Set as S
 import qualified Data.Vector as V
 
-data EditCosts = EditCosts { insertCost     :: Int
-                           , deleteCost     :: Int
-                           , substituteCost :: Int
-                           , transposeCost  :: Int
-                           } deriving Show
+data EditCosts a = EditCosts { insertCost     :: a
+                             , deleteCost     :: a
+                             , substituteCost :: a
+                             , transposeCost  :: a
+                             } deriving Show
 
-defaultEditCosts :: EditCosts
+defaultEditCosts :: EditCosts Int
 defaultEditCosts = EditCosts 1 1 1 1
 
-hamming :: Eq a => EditCosts -> V.Vector a -> V.Vector a -> Maybe Int
+hamming :: (Eq a, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> Maybe b
 hamming EditCosts { substituteCost = scost } s1 s2
-    | l1 == l2 = Just $ (*scost) $ length $ filter notEqualAtIndex [0..l1 - 1]
+    | l1 == l2 = Just $ (*scost) $ fromIntegral $ length $
+        filter notEqualAtIndex [0..l1 - 1]
     | otherwise = Nothing
     where l1 = V.length s1; l2 = V.length s2
           notEqualAtIndex i = s1 V.! i /= s2 V.! i
 
-levenshtein :: Eq a => EditCosts -> V.Vector a -> V.Vector a -> Int
+levenshtein :: (Eq a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
 levenshtein EditCosts { insertCost = icost, deleteCost = dcost,
                         substituteCost = scost } s1 s2 = arr A.! (l1, l2)
     where l1 = V.length s1; l2 = V.length s2
@@ -54,11 +55,11 @@ levenshtein EditCosts { insertCost = icost, deleteCost = dcost,
                              , (arr A.! (i, j - 1))     + dcost
                              , (arr A.! (i - 1, j - 1)) + subCost i j]
           arr = A.array ((0, 0), (l1, l2)) $
-                       [((0, i), i)        | i <- [0..l1]]
-                    ++ [((i, 0), i)        | i <- [0..l2]]
+                       [((0, i), fromIntegral i) | i <- [0..l1]]
+                    ++ [((i, 0), fromIntegral i) | i <- [0..l2]]
                     ++ [((i, j), cost i j) | i <- [1..l1], j <- [1..l2]]
 
-optimalStringAlignment :: Eq a => EditCosts -> V.Vector a -> V.Vector a -> Int
+optimalStringAlignment :: (Eq a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
 optimalStringAlignment EditCosts { insertCost = icost, deleteCost = dcost,
     substituteCost = scost, transposeCost = tcost } s1 s2 = arr A.! (l1, l2)
     where l1 = V.length s1; l2 = V.length s2
@@ -74,11 +75,11 @@ optimalStringAlignment EditCosts { insertCost = icost, deleteCost = dcost,
                                          if elemEq then 0 else tcost
                      in if canTrans then min levCost transCost else levCost
           arr = A.array ((0, 0), (l1, l2)) $
-                       [((0, i), i)        | i <- [0..l1]              ]
-                    ++ [((i, 0), i)        | i <- [0..l2]              ]
+                       [((0, i), fromIntegral i) | i <- [0..l1]]
+                    ++ [((i, 0), fromIntegral i) | i <- [0..l2]]
                     ++ [((i, j), cost i j) | i <- [1..l1], j <- [1..l2]]
 
-damerauLevenshtein :: Ord a => EditCosts -> V.Vector a -> V.Vector a -> Int
+damerauLevenshtein :: Ord a => EditCosts Int -> V.Vector a -> V.Vector a -> Int
 damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
             substituteCost = scost, transposeCost = tcost } s1 s2 = runST $ do
     let l1 = V.length s1; l2 = V.length s2
@@ -88,12 +89,12 @@ damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
     alphabet <- newSTRef $ M.fromList $ zip chars (repeat 0)
 
     let matBounds = ((-1, -1), (l1, l2))
-    d <- SA.newArray matBounds 0 :: ST s (SA.STUArray s (Int, Int) Int)
+    d <- SA.newArray matBounds 0 :: ST s (SA.STArray s (Int, Int) Int)
 
     SA.writeArray d (-1, -1) maxDist
-    forM_ [0..l1] $ \i -> do SA.writeArray d (i, 0) i
+    forM_ [0..l1] $ \i -> do SA.writeArray d (i, 0)  i
                              SA.writeArray d (i, -1) maxDist
-    forM_ [0..l2] $ \i -> do SA.writeArray d (0, i) i
+    forM_ [0..l2] $ \i -> do SA.writeArray d (0, i)  i
                              SA.writeArray d (-1, i) maxDist
 
     db <- newSTRef 0
@@ -111,13 +112,12 @@ damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
 
             insertion <- (+icost) <$> SA.readArray d (i, j - 1)
             deletion <- (+dcost) <$> SA.readArray d (i - 1, j)
-            substitution <- (+cost * scost) <$>
-                                    SA.readArray d (i - 1, j - 1)
+            substitution <- (+cost * scost) <$> SA.readArray d (i - 1, j - 1)
             v <- SA.readArray d (k - 1, l - 1)
-            let transposition = v + (i - k - 1) + (j - l - 1) + tcost
+            let transposition = tcost + v + (i - k - 1) + (j - l - 1)
 
             SA.writeArray d (i, j) $ minimum [insertion, deletion,
-                                             substitution, transposition]
+                                              substitution, transposition]
 
         modifySTRef alphabet $ M.insert c1 i
 
