@@ -5,7 +5,7 @@ module Data.Metrics.Distance.Keyboards.Qwerty (
 import qualified Data.Map.Strict as M
 
 qwertyCoords :: M.Map Char (Int, Int)
-qweryCoords = M.union qwertyUnshifted qwertyShifted
+qwertyCoords = M.union qwertyUnshifted qwertyShifted
 
 qwertyUnshifted :: M.Map Char (Int, Int)
 qwertyUnshifted = M.fromList
@@ -38,7 +38,7 @@ qwertyUnshifted = M.fromList
     ]
 
 qwertyShifted :: M.Map Char (Int, Int)
-qwertyShifted = M.mapKeys (M.! qwertyShift) qwertyUnshifted
+qwertyShifted = M.mapKeys (qwertyShift M.!) qwertyUnshifted
 
 qwertyShift :: M.Map Char Char
 qwertyShift = M.fromList
