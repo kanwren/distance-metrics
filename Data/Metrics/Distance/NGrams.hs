@@ -12,9 +12,9 @@ module Data.Metrics.Distance.NGrams (
     qgram,
     ) where
 
-import qualified Data.Vector as V
-import qualified Data.Set as S
 import Data.Ratio
+import qualified Data.Set as S
+import qualified Data.Vector as V
 
 ngrams :: Ord a => Int -> V.Vector a -> S.Set (V.Vector a)
 ngrams n v = S.fromList $ map (\i -> V.slice i 2 v) [0..V.length v - n]

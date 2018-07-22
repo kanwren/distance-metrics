@@ -51,7 +51,8 @@ library
   exposed-modules:   Data.Metrics.Distance,
                      Data.Metrics.Distance.Keyboards,
                      Data.Metrics.Distance.NGrams,
-                     Data.Metrics.Distance.Sift
+                     Data.Metrics.Distance.Sift,
+                     Data.Metrics.Distance.LCS
 
   -- Modules included in this library but not exported.
   other-modules:     Data.Metrics.Distance.Keyboards.Dvorak,
