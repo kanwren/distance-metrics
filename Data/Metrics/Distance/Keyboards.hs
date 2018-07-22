@@ -7,10 +7,11 @@ module Data.Metrics.Distance.Keyboards (
     optimalStringAlignment,
     ) where
 
-import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
-import Data.Metrics.Distance.Keyboards.Qwerty (qwertyCoords)
 import Data.Metrics.Distance.Keyboards.Dvorak (dvorakCoords)
+import Data.Metrics.Distance.Keyboards.Qwerty (qwertyCoords)
+import qualified Data.Map.Strict as M
+import qualified Data.Vector as V
 
 -- EditCosts are dynamic, calculated using some "quantum" type (usually Char),
 -- and some numeric type for the cost
