@@ -138,10 +138,10 @@ sift1 n s1 s2 = max (V.length s1') (V.length s2') + n
     where fst3 x = let (a, _, _) = x in a
           (_, s1', s2') = until (null . fst3) f (alternating', s1, s2)
           f ([], _, _) = error "Error in sift1: until did not match"
-          f ((x:xs), v1, v2) = let v1' = sift x v1 v2
+          f (x : xs, v1, v2) = let v1' = sift x v1 v2
                                    v2' = sift (-x) v2 v1
                                in (xs, v1', v2')
-          alternating = concat $ [[d, -d] | d <- [0..n `div` 2]]
+          alternating = concat [[d, -d] | d <- [0..n `div` 2]]
           alternating' = if even n
                              then alternating
                              else alternating ++ [n `div` 2 + 1]
@@ -165,7 +165,7 @@ jaro s1 s2 = 1 - jaroSim s1 s2
 -- = (1 - JS a b) * (1 - l * p)
 -- = (JD a b) * (1 - l * p)
 jaroWinkler :: Eq a => Int -> Ratio Int -> V.Vector a -> V.Vector a -> Ratio Int
-jaroWinkler prefixLen p s1 s2 = (jaro s1 s2) * (1 - fromIntegral prefixLen * p)
+jaroWinkler prefixLen p s1 s2 = jaro s1 s2 * (1 - fromIntegral prefixLen * p)
 
 jaroWinklerStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
 jaroWinklerStd s1 s2 = 1 - jaroWinklerSimStd s1 s2
