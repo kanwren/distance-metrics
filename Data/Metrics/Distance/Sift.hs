@@ -1,11 +1,12 @@
 module Data.Metrics.Distance.Sift (
     sift1,
-    sift1Std,
     sift2,
-    sift2Std,
     sift2Sim,
-    sift2SimStd,
     ) where
+
+import Data.List
+import Data.Ratio
+import qualified Data.Vector as V
 
 -- Offset is how much the first string will be shifted by
 sift :: Eq a => Int -> V.Vector a -> V.Vector a -> V.Vector a
@@ -28,20 +29,35 @@ sift1 n s1 s2 = max (V.length s1') (V.length s2') + n
                              then alternating
                              else alternating ++ [n `div` 2 + 1]
 
-sift1Std :: Eq a => V.Vector a -> V.Vector a -> Int
-sift1Std = sift1 10
-
-sift2 :: (Eq a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
+sift2 :: Eq a => Int -> V.Vector a -> V.Vector a -> Ratio Int
 sift2 = undefined
 
-sift2Std :: (Eq a, Floating b) => V.Vector a -> V.Vector a -> b
-sift2Std = sift2 5
+sift2' :: Eq a => Int -> [a] -> [a] -> Ratio Int
+sift2' offset s1 s2 = go s1 s2
+    where go [] s2 = length s2 % 2
+          go s1 [] = length s1 % 2
+          go (x:xs) (y:ys) =
+            if x == y
+                then go xs ys
+                else case elemIndex y (take offset xs) of
+                        Just n -> fromIntegral n + go (drop (n + 1) xs) ys
+                        Nothing -> case elemIndex x (take offset ys) of
+                            Just n -> fromIntegral n + go (drop (n + 1) ys) xs
+                            Nothing -> 1 + go xs ys
 
-sift2Sim :: (Eq a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
+{-sift2' _ [] s2 = length s2 % 2
+sift2' _ s1 [] = length s1 % 2
+sift2' maxOffset (x:xs) (y:ys)
+    | x == y = sift2' maxOffset xs ys
+    | otherwise =
+        case elemIndex y (take maxOffset xs) of
+            Just n -> fromIntegral n + sift2' maxOffset (drop (n + 1) xs) ys
+            Nothing -> case elemIndex x (take maxOffset ys) of
+                            Just n -> fromIntegral n + sift2' maxOffset (drop (n + 1) ys) xs
+                            Nothing -> 1 + sift2' maxOffset xs ys-}
+
+sift2Sim :: Eq a => Int -> V.Vector a -> V.Vector a -> Ratio Int
 sift2Sim maxOffset s1 s2 =
     let d = sift2 maxOffset s1 s2
         maxLen = max (V.length s1) (V.length s2)
     in if maxLen == 0 then 1 else 1 - d / fromIntegral maxLen
-
-sift2SimStd :: (Eq a, Floating b) => V.Vector a -> V.Vector a -> b
-sift2SimStd = sift2Sim 5

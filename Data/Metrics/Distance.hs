@@ -14,11 +14,8 @@ module Data.Metrics.Distance (
     levenshtein,
     optimalStringAlignment,
     sift1,
-    sift1Std,
     sift2,
     sift2Sim,
-    sift2SimStd,
-    sift2Std,
     ) where
 
 import Control.Monad
