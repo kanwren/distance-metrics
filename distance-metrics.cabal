@@ -53,8 +53,9 @@ library
                      Data.Metrics.Distance.Keyboards
 
   -- Modules included in this library but not exported.
-  other-modules:     Data.Metrics.Distance.Keyboards.Qwerty,
-                     Data.Metrics.Distance.Keyboards.Dvorak
+  other-modules:     Data.Metrics.Distance.Keyboards.Dvorak,
+                     Data.Metrics.Distance.Keyboards.Qwerty,
+                     Data.Metrics.Distance.Sift
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
