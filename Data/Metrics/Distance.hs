@@ -135,7 +135,7 @@ jaro s1 s2 = 1 - jaroSim s1 s2
 -- = (1 - JS a b) * (1 - l * p)
 -- = (JD a b) * (1 - l * p)
 jaroWinkler :: Eq a => Int -> Ratio Int -> V.Vector a -> V.Vector a -> Ratio Int
-jaroWinkler prefixLen p s1 s2 = (jaro s1 s2) * (1 - fromIntegral prefixLen * p)
+jaroWinkler prefixLen p s1 s2 = jaro s1 s2 * (1 - fromIntegral prefixLen * p)
 
 jaroWinklerStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
 jaroWinklerStd s1 s2 = 1 - jaroWinklerSimStd s1 s2
