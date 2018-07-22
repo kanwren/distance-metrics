@@ -35,15 +35,16 @@ sift2 offset s1 s2
     | V.null s2 = l1 % 2
     | otherwise = go 0 0 0 0
     where l1 = V.length s1; l2 = V.length s2
+          elemOffset e start v = V.elemIndex e $ V.take offset $ V.drop start v
           go d c o1 o2
             | c + o1 >= l1 || c + o2 >= l2 =
                 fromIntegral (d - c) + (l1 - o1 + l2 - o2) % 2
             | otherwise =
-                case V.elemIndex (s2 V.! c) (V.drop c s1) of
-                    Just n -> go (d + fromIntegral n) (c + 1) (o1 + n) o2
+                case elemOffset (s2 V.! c) c s1 of
+                    Just n -> go (d + n) (c + 1) (o1 + n) o2
                     Nothing ->
-                        case V.elemIndex (s1 V.! c) (V.drop c s2) of
-                            Just n -> go (d + fromIntegral n) (c + 1) o1 (o2 + n)
+                        case elemOffset (s1 V.! c) c s2 of
+                            Just n -> go (d + n) (c + 1) o1 (o2 + n)
                             Nothing -> go (d + 1) (c + 1) o1 o2
 
 sift2' :: Eq a => Int -> [a] -> [a] -> Ratio Int
