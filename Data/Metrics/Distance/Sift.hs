@@ -29,21 +29,38 @@ sift1 n s1 s2 = max (V.length s1') (V.length s2') + n
                              then alternating
                              else alternating ++ [n `div` 2 + 1]
 
+elemOffset :: Eq a => a -> Int -> V.Vector a -> Maybe Int
+elemOffset x start vec = V.elemIndex x $ V.drop start vec
+
 sift2 :: Eq a => Int -> V.Vector a -> V.Vector a -> Ratio Int
-sift2 = undefined
+sift2 offset s1 s2
+    | V.null s1 = l2 % 2
+    | V.null s2 = l1 % 2
+    | otherwise = go 0 0 0 0
+    where l1 = V.length s1; l2 = V.length s2
+          go d c o1 o2
+            | c + o1 >= l1 || c + o2 >= l2 =
+                fromIntegral (d - c) + (l1 - o1 + l2 - o2) % 2
+            | otherwise =
+                case elemOffset (s2 V.! c) c s1 of
+                    Just n -> go (d + fromIntegral n) (c + 1) (o1 + n) o2
+                    Nothing ->
+                        case elemOffset (s1 V.! c) c s2 of
+                            Just n -> go (d + fromIntegral n) (c + 1) o1 (o2 + n)
+                            Nothing -> go (d + 1) (c + 1) o1 o2
 
 sift2' :: Eq a => Int -> [a] -> [a] -> Ratio Int
-sift2' offset s1 s2 = go s1 s2
-    where go [] s2 = length s2 % 2
-          go s1 [] = length s1 % 2
-          go (x:xs) (y:ys) =
-            if x == y
-                then go xs ys
-                else case elemIndex y (take offset xs) of
-                        Just n -> fromIntegral n + go (drop (n + 1) xs) ys
-                        Nothing -> case elemIndex x (take offset ys) of
-                            Just n -> fromIntegral n + go (drop (n + 1) ys) xs
-                            Nothing -> 1 + go xs ys
+sift2' offset s1 s2 = go 0 s1 s2
+    where go d [] s2 = fromIntegral d + length s2 % 2
+          go d s1 [] = fromIntegral d + length s1 % 2
+          go d (x:xs) (y:ys)
+            | x == y = go d xs ys
+            | otherwise =
+                case elemIndex y (take offset xs) of
+                    Just n -> go (d + n) (drop (n + 1) xs) ys
+                    Nothing -> case elemIndex x (take offset ys) of
+                        Just n -> go (d + n) (drop (n + 1) ys) xs
+                        Nothing -> go (d + 1) xs ys
 
 {-sift2' _ [] s2 = length s2 % 2
 sift2' _ s1 [] = length s1 % 2
