@@ -15,6 +15,10 @@ module Data.Metrics.Distance (
     optimalStringAlignment,
     sift1,
     sift1Std,
+    sift2,
+    sift2Sim,
+    sift2SimStd,
+    sift2Std,
     ) where
 
 import Control.Monad
@@ -22,6 +26,7 @@ import Control.Monad.ST
 import Data.List
 import Data.Ratio
 import Data.STRef
+import Data.Metrics.Distance.Sift
 import qualified Data.Array as A
 import qualified Data.Array.ST as SA
 import qualified Data.Map as M
@@ -123,36 +128,6 @@ damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
 
     SA.readArray d (l1, l2)
 
--- Offset is how much the first string will be shifted by
-sift :: Eq a => Int -> V.Vector a -> V.Vector a -> V.Vector a
-sift offset s1 s2 = V.imapMaybe f s1
-    where f i x = let i' = i + offset
-                  in if i' < 0 || i' >= V.length s2 || s1 V.! i /= s2 V.! i'
-                         then Just x
-                         else Nothing
-
-sift1 :: Eq a => Int -> V.Vector a -> V.Vector a -> Int
-sift1 n s1 s2 = max (V.length s1') (V.length s2') + n
-    where fst3 x = let (a, _, _) = x in a
-          (_, s1', s2') = until (null . fst3) f (alternating', s1, s2)
-          f ([], _, _) = error "Error in sift1: until did not match"
-          f ((x:xs), v1, v2) = let v1' = sift x v1 v2
-                                   v2' = sift (-x) v2 v1
-                               in (xs, v1', v2')
-          alternating = concat $ [[d, -d] | d <- [0..n `div` 2]]
-          alternating' = if even n
-                             then alternating
-                             else alternating ++ [n `div` 2 + 1]
-
-sift1Std :: Eq a => V.Vector a -> V.Vector a -> Int
-sift1Std = sift1 10
-
-sift2 :: (Eq a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
-sift2 = undefined
-
-sift2Std :: (Eq a, Floating b) => V.Vector a -> V.Vector a -> b
-sift2Std = sift2 5
-
 jaro :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
 jaro s1 s2 = 1 - jaroSim s1 s2
 
@@ -247,11 +222,3 @@ longestCommonSubsequence s1 s2 = arr A.! (l1, l2)
                      ++ [((i, 0), i)           | i <- [0..l2]              ]
                      ++ [((i, j), compute i j) | i <- [1..l1], j <- [1..l2]]
 
-sift2Sim :: (Eq a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
-sift2Sim maxOffset s1 s2 =
-    let d = sift2 maxOffset s1 s2
-        maxLen = max (V.length s1) (V.length s2)
-    in if maxLen == 0 then 1 else 1 - d / fromIntegral maxLen
-
-sift2StdSim :: (Eq a, Floating b) => V.Vector a -> V.Vector a -> b
-sift2StdSim = sift2Sim 5
