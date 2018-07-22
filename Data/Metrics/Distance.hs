@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Data.Metrics.Distance (
     EditCosts,
     cosineSim,
@@ -79,22 +81,22 @@ optimalStringAlignment EditCosts { insertCost = icost, deleteCost = dcost,
                     ++ [((i, 0), fromIntegral i) | i <- [0..l2]]
                     ++ [((i, j), cost i j) | i <- [1..l1], j <- [1..l2]]
 
-damerauLevenshtein :: Ord a => EditCosts Int -> V.Vector a -> V.Vector a -> Int
+damerauLevenshtein :: forall a b. (Ord a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
 damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
             substituteCost = scost, transposeCost = tcost } s1 s2 = runST $ do
     let l1 = V.length s1; l2 = V.length s2
-        maxDist = l1 + l2
+        maxDist = fromIntegral $ l1 + l2
         chars = nub $ V.toList s1 ++ V.toList s2
 
     alphabet <- newSTRef $ M.fromList $ zip chars (repeat 0)
 
     let matBounds = ((-1, -1), (l1, l2))
-    d <- SA.newArray matBounds 0 :: ST s (SA.STArray s (Int, Int) Int)
+    d <- SA.newArray matBounds 0 :: ST s (SA.STArray s (Int, Int) b)
 
     SA.writeArray d (-1, -1) maxDist
-    forM_ [0..l1] $ \i -> do SA.writeArray d (i, 0)  i
+    forM_ [0..l1] $ \i -> do SA.writeArray d (i, 0) $ fromIntegral i
                              SA.writeArray d (i, -1) maxDist
-    forM_ [0..l2] $ \i -> do SA.writeArray d (0, i)  i
+    forM_ [0..l2] $ \i -> do SA.writeArray d (0, i) $ fromIntegral i
                              SA.writeArray d (-1, i) maxDist
 
     db <- newSTRef 0
@@ -114,7 +116,7 @@ damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
             deletion <- (+dcost) <$> SA.readArray d (i - 1, j)
             substitution <- (+cost * scost) <$> SA.readArray d (i - 1, j - 1)
             v <- SA.readArray d (k - 1, l - 1)
-            let transposition = tcost + v + (i - k - 1) + (j - l - 1)
+            let transposition = tcost + v + fromIntegral (i - k - 2 + j - l)
 
             SA.writeArray d (i, j) $ minimum [insertion, deletion,
                                               substitution, transposition]
