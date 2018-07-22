@@ -49,13 +49,13 @@ cabal-version:       >=1.10
 library
   -- Modules exported by the library.
   exposed-modules:   Data.Metrics.Distance,
-                     Data.Metrics.Distance.Sift
+                     Data.Metrics.Distance.Keyboards,
                      Data.Metrics.Distance.NGrams,
-                     Data.Metrics.Distance.Keyboards
+                     Data.Metrics.Distance.Sift
 
   -- Modules included in this library but not exported.
   other-modules:     Data.Metrics.Distance.Keyboards.Dvorak,
-                     Data.Metrics.Distance.Keyboards.Qwerty,
+                     Data.Metrics.Distance.Keyboards.Qwerty
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:

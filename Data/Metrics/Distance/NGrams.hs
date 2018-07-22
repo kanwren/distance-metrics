@@ -1,4 +1,4 @@
-module Data.Metrics.NGram (
+module Data.Metrics.Distance.NGrams (
     cosine,
     cosineSim,
     jaccard,
@@ -92,7 +92,7 @@ cosineSimilarity x y =
     in xy / (sqrt x2 * sqrt y2)
 
 cosineSim :: (Ord a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
-cosineSim n s1 s2 = uncurry cosineSimilarity $ unzip $ N.qgram n s1 s2
+cosineSim n s1 s2 = uncurry cosineSimilarity $ unzip $ qgrams n s1 s2
 
 jaccardSim :: Ord a => Int -> V.Vector a -> V.Vector a -> Ratio Int
 jaccardSim n s1 s2 =
