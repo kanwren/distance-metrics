@@ -43,24 +43,6 @@ sift1Std = sift1 10
 
 --------------------------------------------------------------------------------
 
-{-sift2 :: Eq a => Int -> V.Vector a -> V.Vector a -> Ratio Int
-sift2 offset s1 s2
-    | V.null s1 = l2 % 2
-    | V.null s2 = l1 % 2
-    | otherwise = go 0 0 0 0
-    where l1 = V.length s1; l2 = V.length s2
-          elemOffset e start v = V.elemIndex e $ V.take offset $ V.drop start v
-          go d c o1 o2
-            | c + o1 >= l1 || c + o2 >= l2 =
-                fromIntegral (d - c) + (l1 - o1 + l2 - o2) % 2
-            | otherwise =
-                case elemOffset (s2 V.! c) c s1 of
-                    Just n -> go (d + n) (c + 1) (o1 + n) o2
-                    Nothing ->
-                        case elemOffset (s1 V.! c) c s2 of
-                            Just n -> go (d + n) (c + 1) o1 (o2 + n)
-                            Nothing -> go (d + 1) (c + 1) o1 o2-}
-
 elemOffset :: Eq a => a -> Int -> Int -> V.Vector a -> Maybe Int
 elemOffset e start maxOffset v =
     V.elemIndex e $ V.take maxOffset $ V.drop start v
@@ -83,10 +65,11 @@ sift2 offset s1 s2
                             Just n -> go (d + n) (c + 1) 0 n
                             Nothing -> go (d + 1) (c + 1) 0 0
 
+{-
 sift2' :: Eq a => Int -> [a] -> [a] -> Ratio Int
 sift2' _ [] [] = 0
-sift2' _ [] s2 = length s2 % 2
-sift2' _ s1 [] = length s1 % 2
+sift2' _ [] s2 = fromIntegral $ length s2
+sift2' _ s1 [] = fromIntegral $ length s1
 sift2' offset s1 s2 = go 0 s1 s2
     where go d [] s2 = fromIntegral d + length s2 % 2
           go d s1 [] = fromIntegral d + length s1 % 2
@@ -98,6 +81,7 @@ sift2' offset s1 s2 = go 0 s1 s2
                     Nothing -> case elemIndex x (take offset ys) of
                         Just n -> go (d + n) (drop (n + 1) ys) xs
                         Nothing -> go (d + 1) xs ys
+-}
 
 sift2Sim :: Eq a => Int -> V.Vector a -> V.Vector a -> Ratio Int
 sift2Sim maxOffset s1 s2 =
