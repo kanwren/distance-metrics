@@ -11,7 +11,6 @@ module Data.Metrics.Distance.Sift (
     sift3Std,
     ) where
 
-import Data.List
 import Data.Ratio
 import qualified Data.Vector as V
 
@@ -59,10 +58,10 @@ sift2 offset s1 s2
             | s1 V.! (c + o1) == s2 V.! (c + o2) = go d (c + 1) o1 o2
             | otherwise =
                 case elemOffset (s2 V.! c) c offset s1 of
-                    Just n -> go (d + n) (c + 1) n 0
+                    Just n  -> go (d + n) (c + 1) n 0
                     Nothing ->
                         case elemOffset (s1 V.! c) c offset s2 of
-                            Just n -> go (d + n) (c + 1) 0 n
+                            Just n  -> go (d + n) (c + 1) 0 n
                             Nothing -> go (d + 1) (c + 1) 0 0
 
 {-
