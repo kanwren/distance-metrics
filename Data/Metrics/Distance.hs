@@ -44,8 +44,8 @@ levenshtein EditCosts { insertCost = icost, deleteCost = dcost,
                              , (arr A.! (i, j - 1))     + dcost
                              , (arr A.! (i - 1, j - 1)) + subCost i j]
           arr = A.array ((0, 0), (l1, l2)) $
-                       [((0, i), fromIntegral i) | i <- [0..l1]]
-                    ++ [((i, 0), fromIntegral i) | i <- [0..l2]]
+                       [((i, 0), fromIntegral i) | i <- [0..l1]]
+                    ++ [((0, i), fromIntegral i) | i <- [0..l2]]
                     ++ [((i, j), cost i j) | i <- [1..l1], j <- [1..l2]]
 
 optimalStringAlignment :: (Eq a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
