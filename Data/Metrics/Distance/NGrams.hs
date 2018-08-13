@@ -9,7 +9,7 @@ module Data.Metrics.Distance.NGrams (
     jaroWinklerSim,
     jaroWinklerSimStd,
     jaroWinklerStd,
-    qgram,
+    qgram
     ) where
 
 import Data.Ratio
@@ -17,7 +17,10 @@ import qualified Data.Set as S
 import qualified Data.Vector as V
 
 ngrams :: Ord a => Int -> V.Vector a -> S.Set (V.Vector a)
-ngrams n v = S.fromList $ map (\i -> V.slice i 2 v) [0..V.length v - n]
+ngrams n v
+    | n <= 0 = S.empty
+    | n == 1 = S.fromList $ map V.singleton $ V.toList v
+    | otherwise = S.fromList $ map (\i -> V.slice i 2 v) [0..V.length v - n]
 
 qgrams :: Ord a => Int -> V.Vector a -> V.Vector a -> [(Int, Int)]
 qgrams n v1 v2 =
