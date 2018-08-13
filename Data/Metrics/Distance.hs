@@ -112,4 +112,3 @@ damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
 
     SA.readArray d (l1, l2)
 
-
