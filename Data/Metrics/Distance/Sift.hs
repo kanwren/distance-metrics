@@ -14,7 +14,7 @@ module Data.Metrics.Distance.Sift (
 import Data.Ratio
 import qualified Data.Vector as V
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 -- Offset is how much the first string will be shifted by
 sift :: Eq a => Int -> V.Vector a -> V.Vector a -> V.Vector a
@@ -40,7 +40,7 @@ sift1 n s1 s2 = max (V.length s1') (V.length s2') + n
 sift1Std :: Eq a => V.Vector a -> V.Vector a -> Int
 sift1Std = sift1 10
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 elemOffset :: Eq a => a -> Int -> Int -> V.Vector a -> Maybe Int
 elemOffset e start maxOffset v =
@@ -94,7 +94,7 @@ sift2Std = sift2 5
 sift2SimStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
 sift2SimStd = sift2Sim 5
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 sift3 :: Eq a => Int -> V.Vector a -> V.Vector a -> Ratio Int
 sift3 offset s1 s2

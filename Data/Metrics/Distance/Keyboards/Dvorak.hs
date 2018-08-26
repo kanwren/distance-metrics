@@ -26,7 +26,8 @@ dvorakUnshifted = M.fromList
     ]
 
 dvorakShifted :: M.Map Char (Int, Int)
-dvorakShifted = M.mapKeys (\k -> fromMaybe k $ dvorakShift M.!? k) dvorakUnshifted
+dvorakShifted = M.mapKeys f dvorakUnshifted
+    where f k = fromMaybe k $ dvorakShift M.!? k
 
 dvorakShift :: M.Map Char Char
 dvorakShift = M.fromList

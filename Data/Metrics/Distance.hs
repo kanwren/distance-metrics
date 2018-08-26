@@ -27,7 +27,12 @@ data EditCosts a = EditCosts { insertCost     :: a
 defaultEditCosts :: EditCosts Int
 defaultEditCosts = EditCosts 1 1 1 1
 
-hamming :: (Eq a, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> Maybe b
+hamming
+    :: (Eq a, Num b)
+    => EditCosts b
+    -> V.Vector a
+    -> V.Vector a
+    -> Maybe b
 hamming EditCosts { substituteCost = scost } s1 s2
     | l1 == l2 = Just $ (*scost) $ fromIntegral $ length $
         filter notEqualAtIndex [0..l1 - 1]
@@ -35,7 +40,12 @@ hamming EditCosts { substituteCost = scost } s1 s2
     where l1 = V.length s1; l2 = V.length s2
           notEqualAtIndex i = s1 V.! i /= s2 V.! i
 
-levenshtein :: (Eq a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
+levenshtein
+    :: (Eq a, Ord b, Num b)
+    => EditCosts b
+    -> V.Vector a
+    -> V.Vector a
+    -> b
 levenshtein EditCosts { insertCost = icost, deleteCost = dcost,
                         substituteCost = scost } s1 s2 = arr A.! (l1, l2)
     where l1 = V.length s1; l2 = V.length s2
@@ -48,7 +58,12 @@ levenshtein EditCosts { insertCost = icost, deleteCost = dcost,
                     ++ [((0, i), fromIntegral i) | i <- [0..l2]]
                     ++ [((i, j), cost i j) | i <- [1..l1], j <- [1..l2]]
 
-optimalStringAlignment :: (Eq a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
+optimalStringAlignment
+    :: (Eq a, Ord b, Num b)
+    => EditCosts b
+    -> V.Vector a
+    -> V.Vector a
+    -> b
 optimalStringAlignment EditCosts { insertCost = icost, deleteCost = dcost,
     substituteCost = scost, transposeCost = tcost } s1 s2 = arr A.! (l1, l2)
     where l1 = V.length s1; l2 = V.length s2
@@ -68,7 +83,12 @@ optimalStringAlignment EditCosts { insertCost = icost, deleteCost = dcost,
                     ++ [((i, 0), fromIntegral i) | i <- [0..l2]]
                     ++ [((i, j), cost i j) | i <- [1..l1], j <- [1..l2]]
 
-damerauLevenshtein :: forall a b. (Ord a, Ord b, Num b) => EditCosts b -> V.Vector a -> V.Vector a -> b
+damerauLevenshtein
+    :: forall a b. (Ord a, Ord b, Num b)
+    => EditCosts b
+    -> V.Vector a
+    -> V.Vector a
+    -> b
 damerauLevenshtein EditCosts { insertCost = icost, deleteCost = dcost,
             substituteCost = scost, transposeCost = tcost } s1 s2 = runST $ do
     let l1 = V.length s1; l2 = V.length s2

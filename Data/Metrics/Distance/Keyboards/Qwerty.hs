@@ -39,7 +39,8 @@ qwertyUnshifted = M.fromList
     ]
 
 qwertyShifted :: M.Map Char (Int, Int)
-qwertyShifted = M.mapKeys (\k -> fromMaybe k $ qwertyShift M.!? k) qwertyUnshifted
+qwertyShifted = M.mapKeys f qwertyUnshifted
+    where f k = fromMaybe k $ qwertyShift M.!? k
 
 qwertyShift :: M.Map Char Char
 qwertyShift = M.fromList

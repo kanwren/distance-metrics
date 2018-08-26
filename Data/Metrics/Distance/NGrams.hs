@@ -40,7 +40,13 @@ jaro s1 s2 = 1 - jaroSim s1 s2
 -- = 1 - JWS l p a b
 -- = (1 - JS a b) * (1 - l * p)
 -- = (JD a b) * (1 - l * p)
-jaroWinkler :: Eq a => Int -> Ratio Int -> V.Vector a -> V.Vector a -> Ratio Int
+jaroWinkler
+    :: Eq a
+    => Int
+    -> Ratio Int
+    -> V.Vector a
+    -> V.Vector a
+    -> Ratio Int
 jaroWinkler prefixLen p s1 s2 = jaro s1 s2 * (1 - fromIntegral prefixLen * p)
 
 jaroWinklerStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
@@ -68,7 +74,11 @@ matches s1 s2 = V.imapMaybe f s1
 transpositions :: V.Vector Int -> Int
 transpositions = V.length . V.filter id . (V.zipWith (>) <*> V.tail)
 
-jaroSim :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
+jaroSim
+    :: Eq a
+    => V.Vector a
+    -> V.Vector a
+    -> Ratio Int
 jaroSim s1 s2 =
     let l1 = V.length s1; l2 = V.length s2
         [m, t] = map ($ matches s1 s2) [length, transpositions]
@@ -77,7 +87,13 @@ jaroSim s1 s2 =
 
 -- p should not exceed 0.25
 -- standard value for p is 0.1
-jaroWinklerSim :: Eq a => Int -> Ratio Int -> V.Vector a -> V.Vector a -> Ratio Int
+jaroWinklerSim
+    :: Eq a
+    => Int
+    -> Ratio Int
+    -> V.Vector a
+    -> V.Vector a
+    -> Ratio Int
 jaroWinklerSim prefixLen p s1 s2 =
     let fixedLen = max 0 $ min 4 prefixLen
         prefix1 = V.take fixedLen s1; prefix2 = V.take fixedLen s2
@@ -85,19 +101,37 @@ jaroWinklerSim prefixLen p s1 s2 =
         sim = jaroSim s1 s2
     in sim + fromIntegral sharedLen * p * (1 - sim)
 
-jaroWinklerSimStd :: Eq a => V.Vector a -> V.Vector a -> Ratio Int
+jaroWinklerSimStd
+    :: Eq a
+    => V.Vector a
+    -> V.Vector a
+    -> Ratio Int
 jaroWinklerSimStd = jaroWinklerSim 4 (1 % 10)
 
-cosineSimilarity :: Floating a => [Int] -> [Int] -> a
+cosineSimilarity
+    :: Floating a
+    => [Int]
+    -> [Int]
+    -> a
 cosineSimilarity x y =
     let sumProduct = fromIntegral . sum . uncurry (zipWith (*))
         [x2, y2, xy] = map sumProduct [(x, x), (y, y), (x, y)]
     in xy / (sqrt x2 * sqrt y2)
 
-cosineSim :: (Ord a, Floating b) => Int -> V.Vector a -> V.Vector a -> b
+cosineSim
+    :: (Ord a, Floating b)
+    => Int
+    -> V.Vector a
+    -> V.Vector a
+    -> b
 cosineSim n s1 s2 = uncurry cosineSimilarity $ unzip $ qgrams n s1 s2
 
-jaccardSim :: Ord a => Int -> V.Vector a -> V.Vector a -> Ratio Int
+jaccardSim
+    :: Ord a
+    => Int
+    -> V.Vector a
+    -> V.Vector a
+    -> Ratio Int
 jaccardSim n s1 s2 =
     let n1 = ngrams n s1; n2 = ngrams n s2
         i = S.intersection n1 n2; u = S.union n1 n2

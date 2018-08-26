@@ -55,14 +55,34 @@ dvorakEditCosts :: EditCosts Char Double
 dvorakEditCosts = euclideanCost dvorakCoords
 
 
-damerauLevenshtein :: (Ord c, Num a) => EditCosts c a -> V.Vector c -> V.Vector c -> a
+damerauLevenshtein
+    :: (Ord c, Num a)
+    => EditCosts c a
+    -> V.Vector c
+    -> V.Vector c
+    -> a
 damerauLevenshtein = undefined
 
-hamming :: (Eq c, Num a) => EditCosts c a -> V.Vector c -> V.Vector c -> a
+hamming
+    :: (Eq c, Num a)
+    => EditCosts c a
+    -> V.Vector c
+    -> V.Vector c
+    -> a
 hamming = undefined
 
-levenshtein :: (Eq c, Ord a, Num a) => EditCosts c a -> V.Vector c -> V.Vector c -> a
+levenshtein
+    :: (Eq c, Ord a, Num a)
+    => EditCosts c a
+    -> V.Vector c
+    -> V.Vector c
+    -> a
 levenshtein = undefined
 
-optimalStringAlignment :: (Eq c, Ord a, Num a) => EditCosts c a -> V.Vector c -> V.Vector c -> a
+optimalStringAlignment
+    :: (Eq c, Ord a, Num a)
+    => EditCosts c a
+    -> V.Vector c
+    -> V.Vector c
+    -> a
 optimalStringAlignment = undefined

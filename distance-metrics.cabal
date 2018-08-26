@@ -13,7 +13,7 @@ name:                distance-metrics
 version:             0.1.0.0
 
 -- A short (one-line) description of the package.
-synopsis: An implementation of various generic distance metrics in native Haskell
+synopsis: An implementation of various vector distance metrics in native Haskell
 
 -- A longer description of the package.
 -- description:
